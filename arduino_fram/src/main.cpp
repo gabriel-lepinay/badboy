@@ -1,42 +1,52 @@
 #include <Arduino.h>
 #include <USB.h>
 #include <USBHIDKeyboard.h>
+#include "button.hpp"
 
 #define BUTTON_PIN 10
+#define BUTTON_PIN2 11
+#define LED 9
 
-// Create a keyboard instance
+button_t *button1;
+button_t *button2;
+
 USBHIDKeyboard Keyboard;
-int buttonState = 0;
-int lastButtonState = 0;
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
+
+void printHelloWorld() {
+  Keyboard.print("Hello World!");
+}
+
+void printNimp() {
+  Keyboard.print("azertyuiop");
+}
 
 void setup() {
-    pinMode(BUTTON_PIN, INPUT);
-    pinMode(LED_BUILTIN, OUTPUT);
-    USB.begin();
-    Keyboard.begin();
-    delay(1000);
+  Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED, OUTPUT);
+  USB.begin();
+  Keyboard.begin();
+  delay(1000);
+
+  digitalWrite(LED_BUILTIN, HIGH);
+  Serial.println("Setup complete");
+  Serial.println("Button initalisation...");
+
+  button1 = init_button(BUTTON_PIN);
+  button2 = init_button(BUTTON_PIN2);
+
+  if (button1 == NULL || button2 == NULL) {
+    while (1) {
+      digitalWrite(BUILTIN_LED, HIGH);
+      delay(1000);
+      digitalWrite(BUILTIN_LED, LOW);
+      delay(1000);
+    }
+  }
 }
 
 void loop() {
-  int reading = digitalRead(BUTTON_PIN);
-
-  if (reading != lastButtonState) {
-    lastDebounceTime = millis();
-  }
-
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (reading != buttonState) {
-      buttonState = reading;
-      if (buttonState == HIGH) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        Keyboard.print("Hello World!");
-      } else {
-        digitalWrite(LED_BUILTIN, LOW);
-      }
-    }
-  }
-
-  lastButtonState = reading;
+  debounce_button(button1, printHelloWorld, NULL);
+  debounce_button(button2, printNimp, NULL);
+  delay(50);
 }

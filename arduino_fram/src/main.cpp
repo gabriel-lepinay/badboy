@@ -2,51 +2,92 @@
 #include <USB.h>
 #include <USBHIDKeyboard.h>
 #include "button.hpp"
+#include "layout_manager.hpp"
+#include <SPI.h>
+#include <SD.h>
 
 #define BUTTON_PIN 10
-#define BUTTON_PIN2 11
 #define LED 9
+#define SD_CS 34
 
 button_t *button1;
-button_t *button2;
-
+File script;
 USBHIDKeyboard Keyboard;
 
-void printHelloWorld() {
-  Keyboard.print("Hello World!");
+
+void open_term_lin() {
+  digitalWrite(LED, HIGH);
+  Keyboard.press(KEY_LEFT_CTRL);
+  Keyboard.press(KEY_LEFT_ALT);
+  Keyboard.press('t');
+  delay(100);
+  Keyboard.releaseAll();
+  digitalWrite(LED, LOW);
 }
 
-void printNimp() {
-  Keyboard.print("azertyuiop");
+void open_term_win() { 
+  digitalWrite(LED, HIGH);
+  Keyboard.press(KEY_LEFT_GUI);
+  Keyboard.press('r');
+  delay(100);
+  Keyboard.releaseAll();
+  Keyboard.print("cmd");
+  delay(100);
+  Keyboard.press(KEY_RETURN);
+  digitalWrite(LED, LOW);
 }
 
-void setup() {
-  Serial.begin(115200);
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED, OUTPUT);
-  USB.begin();
-  Keyboard.begin();
-  delay(1000);
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.println("Setup complete");
-  Serial.println("Button initalisation...");
-
-  button1 = init_button(BUTTON_PIN);
-  button2 = init_button(BUTTON_PIN2);
-
-  if (button1 == NULL || button2 == NULL) {
-    while (1) {
-      digitalWrite(BUILTIN_LED, HIGH);
-      delay(1000);
-      digitalWrite(BUILTIN_LED, LOW);
-      delay(1000);
-    }
+void init_failed() {
+  while (1) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(1000);
   }
 }
 
+void setup() {
+  Serial.println("Setup starting..");
+  Serial.begin(115200);
+  
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED, OUTPUT);
+
+  if (!USB.begin()) {
+    Serial.println("Failed to initialize USB!");
+    init_failed();
+  }
+  Keyboard.begin();
+  SPI.begin(36, 37, 35, SD_CS);
+  if (!SD.begin(SD_CS, SPI)) {
+    Serial.println("SD card initialization failed!");
+    init_failed();
+  }
+
+  script = SD.open("/scripts/open_term.ducky", FILE_WRITE);
+
+  if (!script) {
+    Serial.println("Error opening script file: Script not found or not accessible.");
+  }
+  
+  while (script.available()) {
+    Serial.println(script.read());
+  }
+  
+  script.close();
+
+  button1 = init_button(BUTTON_PIN);
+
+  if (button1 == NULL) {
+    Serial.println("Button initialization failed!");
+    init_failed();
+  }
+  digitalWrite(LED_BUILTIN, HIGH);
+  Serial.println("Setup complete");
+}
+
 void loop() {
-  debounce_button(button1, printHelloWorld, NULL);
-  debounce_button(button2, printNimp, NULL);
+  debounce_button(button1, open_term_lin, NULL);
+
   delay(50);
 }

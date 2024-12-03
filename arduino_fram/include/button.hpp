@@ -1,5 +1,5 @@
 #ifndef BUTTON_HPP
-#define BUTTON_HPP 
+  #define BUTTON_HPP 
 
 typedef struct button_s {
   int button_pin = button_pin;

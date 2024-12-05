@@ -1,45 +1,48 @@
 #include "button.hpp"
 #include <stdlib.h>
 #include <Arduino.h>
+#include "engine.hpp"
 
-button_t *init_button(int button_pin) {
-  button_t *button = (button_t *) malloc(sizeof(button_t));
+QuackButton::QuackButton(uint8_t button_pin, unsigned long debounceDelay, EngineManager &engine) : 
+              button_pin(button_pin), engine(engine) {
+  this->debounceDelay = debounceDelay;
+  pinMode(button_pin, INPUT);
 
-  if (button == NULL) {
-    Serial.println("Memory allocation failed!");
-    return NULL;
+}
+
+bool QuackButton::set_action(button_action action) {
+  this->action = action;
+  return true;
+}
+
+bool QuackButton::del_action() {
+  this->action = NULL;
+  return true;
+}
+
+bool QuackButton::execute_action() {
+  if (this->action != NULL) {
+    this->action(this->engine);
+    return true;
+  }
+  return false;
+}
+
+void QuackButton::listen() {
+  int reading = digitalRead(this->button_pin);
+
+  if (reading != this->lastButtonState) {
+    this->lastDebounceTime = millis();
   }
 
-  button->button_pin = button_pin;
-  button->buttonState = 0;
-  button->lastButtonState = 0;
-  button->lastDebounceTime = 0;
-  button->debounceDelay = 50;
-
-  pinMode(button_pin, INPUT);
-  return button;
+  if ((millis() - this->lastDebounceTime) > this->debounceDelay) {
+    if (reading != this->buttonState) {
+      this->buttonState = reading;
+      if (this->buttonState == HIGH) {
+        this->execute_action();
+      }
+    }
+  }
+  this->lastButtonState = reading;
 }
 
-void debounce_button(button_t *button, button_action action, button_action else_action) {
-    int reading = digitalRead(button->button_pin);
-
-    if (reading != button->lastButtonState) {
-        button->lastDebounceTime = millis();
-    }
-
-    if ((millis() - button->lastDebounceTime) > button->debounceDelay) {
-        if (reading != button->buttonState) {
-            button->buttonState = reading;
-            if (button->buttonState == HIGH) {
-              if (action != NULL) {
-                action();
-              }
-            } else {
-              if (else_action != NULL) {
-                else_action();
-              }
-            }
-        }
-    }
-    button->lastButtonState = reading;
-}

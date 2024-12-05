@@ -1,17 +1,30 @@
-#ifndef BUTTON_HPP
-  #define BUTTON_HPP 
+#ifndef QUACKBUTTON_HPP
+  #define QUACKBUTTON_HPP 
+  #include <stdlib.h>
 
-typedef struct button_s {
-  int button_pin = button_pin;
-  int buttonState = 0;
-  int lastButtonState = 0;
-  unsigned long lastDebounceTime = 0;
-  unsigned long debounceDelay = 50;
-} button_t;
+class EngineManager;
 
-typedef void (*button_action)();
+typedef void (*button_action)(EngineManager &engine);
 
-button_t *init_button(int button_pin);
-void debounce_button(button_t *button, button_action action, button_action else_action);
+class QuackButton {
+  private:
+    const uint8_t button_pin;
+    int buttonState = 0;
+    int lastButtonState = 0;
+    unsigned long lastDebounceTime = 0;
+    unsigned long debounceDelay = 50;
+
+    EngineManager &engine;
+    button_action action = NULL;
+
+  public:
+    QuackButton(uint8_t button_pin, unsigned long debounceDelay, EngineManager &engine);
+    bool set_action(button_action action);
+    bool del_action();
+    bool execute_action();
+    void listen();
+};
+
+
 
 #endif

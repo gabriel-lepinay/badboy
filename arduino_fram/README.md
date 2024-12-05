@@ -23,3 +23,10 @@
 |VBUS|+|
 |GND|-|
 |GPIO9|Data|
+
+|ESP32|LCD Screen|
+|---|---|
+|VBUS|+|
+|GND|-|
+|GPIO4|SDA|
+|GPIO5|SCL|

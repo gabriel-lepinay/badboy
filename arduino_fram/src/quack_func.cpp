@@ -2,14 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void ducky_key(char **line, int start_i = 0) {
+void quack_key(char **line, int start_i = 0) {
     if (line[start_i + 1] == NULL) {
         printf("No key combo or end of combo, press+relALL: %s\n", line[start_i]);
         return;
     }
 
     printf("Pressing key: %s\n", line[start_i]);
-    ducky_key(line, start_i + 1);
+    quack_key(line, start_i + 1);
 }
 
 void delay(char **line) {

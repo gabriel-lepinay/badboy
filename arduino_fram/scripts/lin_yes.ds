@@ -1,3 +1,5 @@
 REM Script to open a terminal on Linux and run yes <string>
 CTRL ALT t
-STRINGLN yes Lock your computer big noob.
+DELAY 50
+STRING yes Lock your computer big noob.
+ENTER

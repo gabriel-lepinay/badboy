@@ -1,0 +1,5 @@
+REM open a windows terminal
+GUI r
+DELAY 50
+STRING cmd
+ENTER

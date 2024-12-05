@@ -1,56 +1,82 @@
 #include "utils.hpp"
 #include <stdio.h>
 #include <stdlib.h>
+#include "engine.hpp"
 
-void quack_key(char **line, int start_i = 0) {
+void quack_key(EngineManager &engine, char **line, int start_i) {
     if (line[start_i + 1] == NULL) {
-        printf("No key combo or end of combo, press+relALL: %s\n", line[start_i]);
+        Serial.print("Typing key: ");
+        Serial.println(line[start_i]);
+        // engine.Keyboard.press();
+        // engine.Keyboard.releaseAll();
+        Serial.println("Release combo");
         return;
     }
 
-    printf("Pressing key: %s\n", line[start_i]);
-    quack_key(line, start_i + 1);
+    Serial.print("Typing key: ");
+    Serial.println(line[start_i]);
+    // engine.Keyboard.press();
+    quack_key(engine, line, start_i + 1);
 }
 
-void delay(char **line) {
+void delay(EngineManager &engine, char **line) {
     int delay_time = atoi(line[1]);
 
-    printf("Delaying for %i\n", delay_time);
+    if (delay_time < 0) {
+        Serial.println("Delay time must be positive");
+        return;
+    }
+    Serial.print("Delaying for ");
+    Serial.print(delay_time);
+    // delay(delay_time);
 }
 
-void string(char **line) {
-    printf("Typing string: ");
+void string(EngineManager &engine, char **line) {
+    Serial.print("Typing string: ");
     for (int i = 1; line[i] != NULL; i++) {
         if (line[i + 1] == NULL) {
-            printf("%s", line[i]);
+            Serial.print(line[i]);
+            // engine.Keyboard.print(line[i]);
             break;
         }
-        printf("%s ", line[i]);
+        // engine.Keyboard.print(line[i]);
+        Serial.print(line[i]);
     }
 }
 
-void stringln(char **line) {
-    printf("Typing string: ");
+void stringln(EngineManager &engine, char **line) {
+    Serial.print("Typing string: ");
     for (int i = 1; line[i] != NULL; i++) {
         if (line[i + 1] == NULL) {
-            printf("%s", line[i]);
+            Serial.print(line[i]);
+            // engine.Keyboard.print(line[i]);
             break;
         }
-        printf("%s ", line[i]);
+        // engine.Keyboard.print(line[i]);
+        Serial.print(line[i]);    
     }
-    printf("\n");
+    Serial.print("\n"); 
+    // engine.Keyboard.print(line[i]);
 }
 
-void wait_for_button(char **line) {
+
+// TODO To implement
+void wait_for_button(EngineManager &engine, char **line) {
     int gpio = atoi(line[1]);
 
     // while (digitalRead(gpio) == LOW) {
     //     wait
     // }
-    printf("Waiting for button press\n");
+    Serial.println("Waiting for button press");
 }
-
-void led(char **line) {
-    line[1] == "ON" ? printf("Turning on LED\n") : printf("Turning off LED\n");
+// TODO To implement
+void led(EngineManager &engine, char **line) {
+    if (strcmp(line[1], "ON")) {
+        Serial.println("LED ON");
+    } else if (strcmp(line[1], "OFF")) {
+        Serial.println("LED OFF");
+    } else {
+        Serial.println("Invalid argument");
+    }
 }
 

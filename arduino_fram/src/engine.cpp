@@ -1,33 +1,52 @@
 #include "engine.hpp"
-
-void toggleLed(EngineManager &engine) {
-    if (engine.Led.status == 0) {
-        Serial.println("Led on");
-        engine.Led.on();
-        engine.Led.status = 1;
-    } else {
-        Serial.println("Led off");
-        engine.Led.off();
-        engine.Led.status = 0;
-    }
-}
+#include "button_actions.hpp"
+#include <vector>
 
 EngineManager::EngineManager()
-    :   ButtonOk(BUTTON_OK, 50, *this),
-        Led(LED_R, LED_G, LED_B),
-        Sd(SD_SCK, SD_MISO, SD_MOSI, SD_CS),
+    :   Keyboard(),
         Screen(0x27, 16, 2),
-        Keyboard()
+        Sd(SD_SCK, SD_MISO, SD_MOSI, SD_CS, *this),
+        Led(LED_R, LED_G, LED_B),
+        ButtonUp(BUTTON_UP, 10, *this),
+        ButtonOk(BUTTON_OK, 10, *this),
+        ButtonDown(BUTTON_DOWN, 10, *this)
         {}
 
 void EngineManager::init() {
-    ButtonOk.set_action(toggleLed);
-    Led.set_color(0, 0, 255);
-    Sd.exec_script("/scripts/lin_yes.ds");
+    Led.set_color(255, 0, 0);
+    Keyboard.begin();
+
+    if (!Sd.is_exist("/scripts")) {
+        Serial.println("Scripts directory doesn't exist. Creating one...");
+        Sd.mkdir("/scripts");
+    }
+
+    ButtonDown.set_action(go_down);
+    ButtonOk.set_action(select_script);
+    ButtonUp.set_action(go_up);
+
     Wire.begin(LCD_SDA, LCD_SCL);
     Screen.init();
     Screen.backlight();
-    Screen.setCursor(0,0);
-    Screen.print("Hello, world!");
+
+    int nb_files;
+    this->scripts = Sd.ls("/scripts", &nb_files);
+    this->display_scripts();
+
+    Led.set_color(0, 255, 0);
     Serial.println("Engine initialized");
+}
+
+void EngineManager::display_scripts() {
+    Screen.clear();
+    
+    Screen.setCursor(0, 0);
+    Screen.print('>');
+    Screen.setCursor(1, 0);
+    Screen.print(this->scripts[this->cur_i]);
+
+    if (this->cur_i < this->scripts.size() - 1) {
+        Screen.setCursor(1, 1);
+        Screen.print(this->scripts[this->cur_i + 1]);
+    }
 }

@@ -8,6 +8,8 @@
 
     // Buttons
     #define BUTTON_OK 9
+    #define BUTTON_UP 0 // TODO
+    #define BUTTON_DOWN 8
     // RGB LED
     #define LED_R 10
     #define LED_G 11
@@ -25,14 +27,18 @@
         public:
             USBHIDKeyboard Keyboard;
             LiquidCrystal_I2C Screen;
-            // QuackButton ButtonUp;
-            // QuackButton ButtonDown;
             QuackLed Led;
             QuackSd Sd;
+            QuackButton ButtonUp;
             QuackButton ButtonOk;
+            QuackButton ButtonDown;
+
+            std::vector<char*> scripts;
+            int cur_i = 0;
             
             EngineManager();
             void init();
+            void display_scripts();
     };
 
 #endif

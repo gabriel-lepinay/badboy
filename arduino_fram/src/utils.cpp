@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <Arduino.h>
+#include "sd.hpp"
 
 int count_c(char *line, char c) {
     int count = 0;
@@ -48,14 +49,5 @@ void free_tab(char **tab) {
 void clear_buffer(char *buffer, int size) {
     for (int i = 0; i < size; i++) {
         buffer[i] = '\0';
-    }
-}
-
-void init_failed(int debug_led = LED_BUILTIN) {
-    while (1) {
-        digitalWrite(debug_led, HIGH);
-        delay(1000);
-        digitalWrite(debug_led, LOW);
-        delay(1000);
     }
 }

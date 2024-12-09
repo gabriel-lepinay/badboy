@@ -16,13 +16,14 @@ class QuackButton {
 
     EngineManager &engine;
     button_action action = NULL;
-
+    
   public:
     QuackButton(uint8_t button_pin, unsigned long debounceDelay, EngineManager &engine);
     bool set_action(button_action action);
     bool del_action();
     bool execute_action();
     void listen();
+    void wait_for_press(EngineManager &engine);
 };
 
 

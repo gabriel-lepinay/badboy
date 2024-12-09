@@ -8,7 +8,7 @@
 
     // Buttons
     #define BUTTON_OK 9
-    #define BUTTON_UP 0 // TODO
+    #define BUTTON_UP 7
     #define BUTTON_DOWN 8
     // RGB LED
     #define LED_R 10
@@ -39,6 +39,10 @@
             EngineManager();
             void init();
             void display_scripts();
+            int translate_key(const char *key);
+            void init_failed();
+            void change_layout();
+            
     };
 
 #endif

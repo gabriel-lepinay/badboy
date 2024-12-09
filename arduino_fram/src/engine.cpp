@@ -4,9 +4,9 @@
 
 EngineManager::EngineManager()
     :   Keyboard(),
+        Led(LED_R, LED_G, LED_B),
         Screen(0x27, 16, 2),
         Sd(SD_SCK, SD_MISO, SD_MOSI, SD_CS, *this),
-        Led(LED_R, LED_G, LED_B),
         ButtonUp(BUTTON_UP, 10, *this),
         ButtonOk(BUTTON_OK, 10, *this),
         ButtonDown(BUTTON_DOWN, 10, *this)
@@ -48,5 +48,24 @@ void EngineManager::display_scripts() {
     if (this->cur_i < this->scripts.size() - 1) {
         Screen.setCursor(1, 1);
         Screen.print(this->scripts[this->cur_i + 1]);
+    }
+}
+
+int EngineManager::translate_key(const char *key) {
+    for (int i = 0; QUACK_KEYS[i].key_str != NULL; i++) {
+        if (strcmp(QUACK_KEYS[i].key_str, key) == 0) {
+            return QUACK_KEYS[i].key_int;
+        }
+    }
+    return -1;
+}
+
+void EngineManager::init_failed() {
+    this->Led.set_color(255, 0, 0);
+    while (1) {
+        this->Led.on();
+        delay(1000);
+        this->Led.off();
+        delay(1000);
     }
 }

@@ -51,13 +51,13 @@
     {NULL, 0}
   };
 
-  quack_binder_t const QUACK_CMD[] = {
+  quack_binder_t const QUACK_CMD[] = { 
     {"REM", NULL},
     {"DELAY", delay},
     {"STRING", string},
     {"STRINGLN", stringln},
     {"WAIT_BUT", wait_for_button},
-    {"LED", led},
+    {"LED", led}, // Maybe add color for led debug color
     {NULL, NULL}
   };
 

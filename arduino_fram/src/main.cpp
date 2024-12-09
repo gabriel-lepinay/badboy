@@ -4,21 +4,18 @@
 EngineManager engine;
 
 void setup() {
-  Serial.println("Setup starting..");
-  Serial.begin(115200);
-  
-  // For debugging remove in 'production'
-  while (!Serial) { 
-    delay(10);
-  }
+  // For debugging
+  // Serial.begin(115200);
+  // while (!Serial) { 
+  //   delay(10);
+  // }
 
   engine.init();
-  Serial.println("Setup complete");
 }
 
 void loop() {
   engine.ButtonOk.listen();
   engine.ButtonDown.listen();
-  // engine.ButtonUp.listen(); // TODO
+  engine.ButtonUp.listen();
   delay(10);
 }

@@ -46,3 +46,10 @@ void QuackButton::listen() {
   this->lastButtonState = reading;
 }
 
+void QuackButton::wait_for_press(EngineManager &engine) {
+  engine.Led.set_color(255, 153, 51);
+  while (digitalRead(this->button_pin) == LOW) {
+    delay(50);
+  }
+  engine.Led.set_last_color();
+}

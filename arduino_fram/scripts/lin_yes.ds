@@ -1,5 +1,5 @@
 REM Script to open a terminal on Linux and run yes <string>
 CTRL ALT t
-DELAY 50
-STRING yes Lock your computer big noob.
+DELAY 500
+STRING yes 'Get pwned ^^'
 ENTER

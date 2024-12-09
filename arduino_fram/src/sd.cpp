@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include "engine.hpp"
 #include "sd.hpp"
 #include <vector>
 
@@ -12,7 +13,7 @@ QuackSd::QuackSd(uint8_t SCK_GPIO, uint8_t MISO_GPIO, uint8_t MOSI_GPIO, uint8_t
     SPI.begin(SCK_GPIO, MISO_GPIO, MOSI_GPIO, CS_GPIO);
 
     if (!SD.begin(CS_GPIO, SPI)) {
-        Serial.println("SD card initialization failed: SD card not found or not accessible.");
+        engine.init_failed();
     }
 }
 
@@ -78,11 +79,6 @@ std::vector<char*> QuackSd::ls(const char *path, int *nb_f) {
 int QuackSd::parse_cmd(char *tmp_line) {
     char **line = space_split(tmp_line);
 
-    Serial.print("Parsing command: ");
-    Serial.print(tmp_line);
-    Serial.println();
-
-    //look for 
     for (int index = 0; QUACK_CMD[index].key != NULL; index++) {
         if (strcmp(line[0], QUACK_CMD[index].key) == 0 && QUACK_CMD[index].func != NULL) {
             QUACK_CMD[index].func(this->engine, line);
